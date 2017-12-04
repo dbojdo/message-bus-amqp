@@ -1,0 +1,40 @@
+{
+    "name": "webit/message-bus-amqp",
+    "type": "library",
+    "keywords": ["message bus", "message queue", "rabbitmq", "amqp"],
+    "authors": [{
+        "name": "Daniel Bojdo",
+        "email": "daniel.bojdo@web-it.eu"
+    }],
+    "license": "MIT",
+    "require": {
+        "php": ">=7.0",
+        "webit/message-bus": "^1.0.0",
+        "php-amqplib/php-amqplib": "^2.7.0",
+        "doctrine/cache": "^1.6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Webit\\MessageBus\\Infrastructure\\Amqp\\": "src/"
+        }
+    },
+    "provide": {
+        "webit/message-bus-infrastructure": "1.0.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Webit\\MessageBus\\Infrastructure\\Amqp\\": "tests/unit",
+            "Webit\\MessageBus\\Infrastructure\\Amqp\\Integration\\": "tests/integration"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.x-dev"
+        }
+    },
+    "prefer-stable": true,
+    "minimum-stability": "dev"
+}
