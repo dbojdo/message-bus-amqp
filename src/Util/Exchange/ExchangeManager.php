@@ -2,7 +2,10 @@
 
 namespace Webit\MessageBus\Infrastructure\Amqp\Util\Exchange;
 
+use PhpAmqpLib\Exception\AMQPProtocolChannelException;
+use PhpAmqpLib\Message\AMQPMessage;
 use Webit\MessageBus\Infrastructure\Amqp\Channel\ConnectionAwareChannelFactory;
+use Webit\MessageBus\Infrastructure\Amqp\Util\Exchange\Exception\CannotBindExchangeException;
 
 class ExchangeManager
 {
@@ -20,21 +23,23 @@ class ExchangeManager
 
     /**
      * @param Exchange $exchange
+     * @param bool $noWait
+     * @param array $arguments
+     * @param int|null $ticket
      */
-    public function declareExchange(Exchange $exchange)
+    public function declareExchange(Exchange $exchange, $noWait = false, array $arguments = [], int $ticket = null)
     {
         $channel = $this->channelFactory->create();
-
         $channel->exchange_declare(
             $exchange->name(),
-            $exchange->type(),
+            (string)$exchange->type(),
             $exchange->isPassive(),
             $exchange->isDurable(),
             $exchange->isAutoDelete(),
             $exchange->isInternal(),
-            $exchange->isNoWait(),
-            $exchange->arguments(),
-            $exchange->ticket()
+            $noWait,
+            $arguments,
+            $ticket
         );
     }
 
@@ -44,15 +49,84 @@ class ExchangeManager
      * @param bool $noWait
      * @param int $ticket
      */
-    public function deleteExchange(string $exchangeName, bool $ifUnused = false, bool $noWait = false, int $ticket = null)
-    {
+    public function deleteExchange(
+        string $exchangeName,
+        bool $ifUnused = false,
+        bool $noWait = false,
+        int $ticket = null
+    ) {
         $channel = $this->channelFactory->create();
-
         $channel->exchange_delete(
             $exchangeName,
             $ifUnused,
             $noWait,
             $ticket
         );
+    }
+
+    /**
+     * @param ExchangeBinding $binding
+     * @param bool $noWait
+     * @param array $arguments
+     * @param int|null $ticket
+     */
+    public function bindExchange(ExchangeBinding $binding, $noWait = false, array $arguments = [], int $ticket = null)
+    {
+        $channel = $this->channelFactory->create();
+        foreach ($binding as $routingKey) {
+            try {
+                $channel->exchange_bind(
+                    $binding->destination(),
+                    $binding->source(),
+                    $routingKey,
+                    $noWait,
+                    $arguments,
+                    $ticket
+                );
+            } catch (AMQPProtocolChannelException $e) {
+                throw CannotBindExchangeException::fromBindingAndRoutingKey($binding, $routingKey, 0, $e);
+            }
+        }
+    }
+
+    /**
+     * @param ExchangeBinding $binding
+     * @param bool $noWait
+     * @param array $arguments
+     * @param int|null $ticket
+     */
+    public function unbindExchange(ExchangeBinding $binding, $noWait = false, array $arguments = [], int $ticket = null)
+    {
+        $channel = $this->channelFactory->create();
+        foreach ($binding as $routingKey) {
+            $channel->exchange_unbind(
+                $binding->destination(),
+                $binding->source(),
+                $routingKey,
+                $noWait,
+                $arguments,
+                $ticket
+            );
+        }
+    }
+
+    /**
+     * @param AMQPMessage $message
+     * @param string $exchangeName
+     * @param string $routingKey
+     * @param bool $mandatory
+     * @param bool $immediate
+     * @param int|null $ticket
+     */
+    public function publishMessage(
+        AMQPMessage $message,
+        string $exchangeName,
+        string $routingKey,
+        bool $mandatory = false,
+        bool $immediate = false,
+        int $ticket = null
+    ) {
+        $channel = $this->channelFactory->create();
+        $channel->basic_publish($message, $exchangeName, $routingKey, $mandatory, $immediate, $ticket);
     }
 }

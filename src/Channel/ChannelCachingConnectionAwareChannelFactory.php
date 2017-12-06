@@ -33,7 +33,7 @@ class ChannelCachingConnectionAwareChannelFactory implements ConnectionAwareChan
      */
     public function create()
     {
-        if (!$this->cache->has($this->cacheKey)) {
+        if (!$this->cache->contains($this->cacheKey)) {
             $channel = $this->innerFactory->create();
             $this->cache->save($this->cacheKey, $channel);
 

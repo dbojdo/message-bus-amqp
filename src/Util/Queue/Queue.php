@@ -19,15 +19,6 @@ final class Queue
     /** @var bool */
     private $autoDelete;
 
-    /** @var bool */
-    private $noWait;
-
-    /** @var null */
-    private $arguments;
-
-    /** @var int */
-    private $ticket;
-
     /**
      * Queue constructor.
      * @param string $name
@@ -35,28 +26,19 @@ final class Queue
      * @param bool $durable
      * @param bool $exclusive
      * @param bool $autoDelete
-     * @param bool $noWait
-     * @param null $arguments
-     * @param int|null $ticket
      */
     public function __construct(
         string $name,
         bool $passive = false,
         bool $durable = false,
         bool $exclusive = false,
-        bool $autoDelete = true,
-        bool $noWait = false,
-        $arguments = null,
-        int $ticket = null
+        bool $autoDelete = true
     ) {
         $this->name = $name;
         $this->passive = $passive;
         $this->durable = $durable;
         $this->exclusive = $exclusive;
         $this->autoDelete = $autoDelete;
-        $this->noWait = $noWait;
-        $this->arguments = $arguments;
-        $this->ticket = $ticket;
     }
 
     /**
@@ -100,26 +82,10 @@ final class Queue
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function isNoWait(): bool
+    public function __toString()
     {
-        return $this->noWait;
-    }
-
-    /**
-     * @return null
-     */
-    public function arguments()
-    {
-        return $this->arguments;
-    }
-
-    /**
-     * @return int
-     */
-    public function ticket(): int
-    {
-        return $this->ticket;
+        return $this->name();
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Webit\MessageBus\Infrastructure\Amqp\Util\Queue;
 
-final class QueueBinding
+final class QueueBinding implements \IteratorAggregate
 {
     /** @var string */
     private $queueName;
@@ -11,22 +11,13 @@ final class QueueBinding
     private $exchangeName;
 
     /** @var string[] */
-    private $bindings;
-
-    /** @var bool */
-    private $nowait;
-
-    /** @var null */
-    private $arguments;
-
-    /** @var int */
-    private $ticket;
+    private $routingKeys;
 
     /**
      * Binding constructor.
      * @param string $queueName
      * @param string $exchangeName
-     * @param string[] $bindings
+     * @param string[] $routingKeys
      * @param bool $nowait
      * @param mixed $arguments
      * @param int|null $ticket
@@ -34,17 +25,14 @@ final class QueueBinding
     public function __construct(
         string $queueName,
         string $exchangeName,
-        array $bindings,
+        array $routingKeys,
         bool $nowait = false,
         $arguments = null,
         int $ticket = null
     ) {
         $this->queueName = $queueName;
         $this->exchangeName = $exchangeName;
-        $this->bindings = $bindings;
-        $this->nowait = $nowait;
-        $this->arguments = $arguments;
-        $this->ticket = $ticket;
+        $this->routingKeys = $routingKeys;
     }
 
     /**
@@ -66,32 +54,16 @@ final class QueueBinding
     /**
      * @return string[]
      */
-    public function bindings(): array
+    public function routingKeys(): array
     {
-        return $this->bindings;
+        return $this->routingKeys;
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function isNowait(): bool
+    public function getIterator()
     {
-        return $this->nowait;
-    }
-
-    /**
-     * @return null
-     */
-    public function arguments()
-    {
-        return $this->arguments;
-    }
-
-    /**
-     * @return int
-     */
-    public function ticket(): int
-    {
-        return $this->ticket;
+        return new \ArrayIterator($this->routingKeys());
     }
 }

@@ -22,37 +22,22 @@ final class Exchange
     /** @var bool */
     private $internal;
 
-    /** @var bool */
-    private $noWait;
-
-    /** @var mixed */
-    private $arguments;
-
-    /** @var int */
-    private $ticket;
-
     /**
      * Exchange constructor.
      * @param string $name
-     * @param string $type
+     * @param ExchangeType $type
      * @param bool $passive
      * @param bool $durable
      * @param bool $autoDelete
      * @param bool $internal
-     * @param bool $noWait
-     * @param mixed $arguments
-     * @param int $ticket
      */
     public function __construct(
         string $name,
-        string $type,
+        ExchangeType $type,
         bool $passive = false,
         bool $durable = false,
         bool $autoDelete = true,
-        bool $internal = false,
-        bool $noWait = false,
-        $arguments = null,
-        int $ticket = null
+        bool $internal = false
     ) {
 
         $this->name = $name;
@@ -61,9 +46,6 @@ final class Exchange
         $this->durable = $durable;
         $this->autoDelete = $autoDelete;
         $this->internal = $internal;
-        $this->noWait = $noWait;
-        $this->arguments = $arguments;
-        $this->ticket = $ticket;
     }
 
     /**
@@ -75,9 +57,9 @@ final class Exchange
     }
 
     /**
-     * @return string
+     * @return ExchangeType
      */
-    public function type(): string
+    public function type(): ExchangeType
     {
         return $this->type;
     }
@@ -115,26 +97,10 @@ final class Exchange
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function isNoWait(): bool
+    public function __toString()
     {
-        return $this->noWait;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function arguments()
-    {
-        return $this->arguments;
-    }
-
-    /**
-     * @return int
-     */
-    public function ticket(): int
-    {
-        return $this->ticket;
+        return $this->name();
     }
 }

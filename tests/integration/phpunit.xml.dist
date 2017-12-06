@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- https://phpunit.de/manual/current/en/appendixes.configuration.html -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.8/phpunit.xsd"
+         backupGlobals="false"
+         colors="true"
+         bootstrap="../../vendor/autoload.php"
+>
+    <php>
+        <env name="rabbitmq.host" value="rabbitmq" />
+        <env name="rabbitmq.user" value="rabbitmq" />
+        <env name="rabbitmq.password" value="rabbitmq" />
+        <env name="rabbitmq.port" value="5672" />
+        <env name="rabbitmq.vhost" value="/" />
+    </php>
+
+    <testsuites>
+        <testsuite name="Main Suite">
+            <directory>.</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
