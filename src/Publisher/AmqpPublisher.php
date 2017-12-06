@@ -1,14 +1,13 @@
 <?php
 
-namespace Webit\MessageBus\Infrastructure\Amqp;
+namespace Webit\MessageBus\Infrastructure\Amqp\Publisher;
 
 use Webit\MessageBus\Exception\MessagePublicationException;
 use Webit\MessageBus\Infrastructure\Amqp\Publisher\Message\AmqpMessageFactory;
-use Webit\MessageBus\Infrastructure\Amqp\Publisher\PublicationTarget;
 use Webit\MessageBus\Message;
 use Webit\MessageBus\Publisher;
 
-class AmqpPublisher implements Publisher
+final class AmqpPublisher implements Publisher
 {
     /** @var AmqpMessageFactory */
     private $messageFactory;

@@ -3,11 +3,11 @@
 namespace Webit\MessageBus\Infrastructure\Amqp\Listener;
 
 use PhpAmqpLib\Message\AMQPMessage;
-use Webit\MessageBus\Infrastructure\Amqp\Consumer\Exception\AmqpMessageConsumptionException;
+use Webit\MessageBus\Infrastructure\Amqp\Listener\Exception\AmqpMessageConsumptionException;
 
-class FeedbackSendingAmqpListener implements AmqpListener
+final class FeedbackSendingAmqpMessageConsumer implements AmqpMessageConsumer
 {
-    /** @var AmqpListener */
+    /** @var AmqpMessageConsumer */
     private $innerListener;
 
     /** @var AmqpMessageFeedbackSender */
@@ -15,22 +15,22 @@ class FeedbackSendingAmqpListener implements AmqpListener
 
     /**
      * FeedbackSendingAmqpListener constructor.
-     * @param AmqpListener $innerListener
+     * @param AmqpMessageConsumer $innerListener
      * @param AmqpMessageFeedbackSender $feedbackSender
      */
-    public function __construct(AmqpListener $innerListener, AmqpMessageFeedbackSender $feedbackSender)
+    public function __construct(AmqpMessageConsumer $innerListener, AmqpMessageFeedbackSender $feedbackSender = null)
     {
         $this->innerListener = $innerListener;
-        $this->feedbackSender = $feedbackSender;
+        $this->feedbackSender = $feedbackSender ?: new AmqpMessageFeedbackSender();
     }
 
     /**
      * @inheritdoc
      */
-    public function onMessage(AMQPMessage $message)
+    public function consume(AMQPMessage $message)
     {
         try {
-            $this->innerListener->onMessage($message);
+            $this->innerListener->consume($message);
         } catch (AmqpMessageConsumptionException $e) {
             $this->feedbackSender->nacknowledge($message);
             throw $e;

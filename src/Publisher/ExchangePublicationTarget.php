@@ -3,10 +3,10 @@
 namespace Webit\MessageBus\Infrastructure\Amqp\Publisher;
 
 use PhpAmqpLib\Message\AMQPMessage;
-use Webit\MessageBus\Infrastructure\Amqp\Channel\ConnectionAwareChannelFactory;
-use Webit\MessageBus\Infrastructure\Amqp\Publisher\RoutingKey\RoutingKeyResolver;
+use Webit\MessageBus\Infrastructure\Amqp\Connection\Channel\ConnectionAwareChannelFactory;
+use Webit\MessageBus\Infrastructure\Amqp\Publisher\Routing\RoutingKeyResolver;
 
-class ExchangePublicationTarget extends AbstractBasicPublicationTarget
+final class ExchangePublicationTarget extends AbstractBasicPublicationTarget
 {
     /** @var RoutingKeyResolver */
     private $routingKeyResolver;
@@ -17,12 +17,9 @@ class ExchangePublicationTarget extends AbstractBasicPublicationTarget
     public function __construct(
         ConnectionAwareChannelFactory $channelFactory,
         RoutingKeyResolver $routingKeyResolver,
-        $exchangeName,
-        bool $mandatory = false,
-        bool $immediate = false,
-        int $ticket = null
+        $exchangeName
     ) {
-        parent::__construct($channelFactory, $mandatory, $immediate, $ticket);
+        parent::__construct($channelFactory);
         $this->routingKeyResolver = $routingKeyResolver;
         $this->exchangeName = $exchangeName;
     }

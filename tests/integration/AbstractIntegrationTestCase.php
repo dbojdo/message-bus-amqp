@@ -2,10 +2,14 @@
 
 namespace Webit\MessageBus\Infrastructure\Amqp\Integration;
 
-use PhpAmqpLib\Connection\AMQPLazyConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use PHPUnit\Framework\TestCase;
-use Webit\MessageBus\Infrastructure\Amqp\Channel\NewChannelConnectionAwareChannelFactory;
+use Webit\MessageBus\Infrastructure\Amqp\Connection\Channel\CachingChannelConnectionAwareChannelFactory;
+use Webit\MessageBus\Infrastructure\Amqp\Connection\Channel\NewChannelConnectionAwareChannelFactory;
+use Webit\MessageBus\Infrastructure\Amqp\Connection\ConnectionParams;
+use Webit\MessageBus\Infrastructure\Amqp\Connection\Pool\ConnectionPool;
+use Webit\MessageBus\Infrastructure\Amqp\Connection\Pool\ConnectionPoolBuilder;
+use Webit\MessageBus\Infrastructure\Amqp\Connection\Pool\Exception\NoViableConnectionsInPoolException;
 use Webit\MessageBus\Infrastructure\Amqp\Util\Exchange\Exchange;
 use Webit\MessageBus\Infrastructure\Amqp\Util\Exchange\ExchangeManager;
 use Webit\MessageBus\Infrastructure\Amqp\Util\Exchange\ExchangeType;
@@ -15,8 +19,8 @@ use Webit\MessageBus\Message;
 
 abstract class AbstractIntegrationTestCase extends TestCase
 {
-    /** @var AMQPLazyConnection[] */
-    private $rabbitMqConnections;
+    /** @var ConnectionPool[] */
+    private $connectionPools = [];
 
     /** @var Exchange[] */
     private $exchanges = [];
@@ -24,26 +28,41 @@ abstract class AbstractIntegrationTestCase extends TestCase
     /** @var Queue[] */
     private $queues = [];
 
-    protected function rabbitMqConnection($newConnection = false)
+    /**
+     * @param bool $newConnection
+     * @return ConnectionPool
+     */
+    protected function connectionPool($newConnection = false)
+    {
+        if ($newConnection || !$this->connectionPools) {
+            $connectionPoolBuilder = ConnectionPoolBuilder::create();
+            $connectionPoolBuilder->registerConnection($this->connectionParams());
+            $this->connectionPools[] = $connectionPoolBuilder->build();
+        }
+
+        return $this->connectionPools[count($this->connectionPools) - 1];
+    }
+
+    /**
+     * @return ConnectionParams
+     */
+    protected function connectionParams(): ConnectionParams
     {
         $host = getenv('rabbitmq.host');
         $user = getenv('rabbitmq.user');
         $password = getenv('rabbitmq.password');
-        $port = getenv('rabbitmq.port') ?: '5671';
+        $port = getenv('rabbitmq.port') ?: '5672';
         $vhost = getenv('rabbitmq.vhost') ?: '/';
 
-        if ($newConnection || !$this->rabbitMqConnections) {
-            $this->rabbitMqConnections[] = new AMQPLazyConnection(
-                $host,
-                $port,
-                $user,
-                $password,
-                $vhost
-            );
-        }
-
-        return $this->rabbitMqConnections[count($this->rabbitMqConnections) -1];
+        return new ConnectionParams(
+            $host,
+            $port,
+            $user,
+            $password,
+            $vhost
+        );
     }
+
 
     /**
      * @return ExchangeManager
@@ -51,8 +70,10 @@ abstract class AbstractIntegrationTestCase extends TestCase
     protected function exchangeManager()
     {
         return new ExchangeManager(
-            new NewChannelConnectionAwareChannelFactory(
-                $this->rabbitMqConnection()
+            new CachingChannelConnectionAwareChannelFactory(
+                new NewChannelConnectionAwareChannelFactory(
+                    $this->connectionPool()
+                )
             )
         );
     }
@@ -63,8 +84,10 @@ abstract class AbstractIntegrationTestCase extends TestCase
     protected function queueManager()
     {
         return new QueueManager(
-            new NewChannelConnectionAwareChannelFactory(
-                $this->rabbitMqConnection()
+            new CachingChannelConnectionAwareChannelFactory(
+                new NewChannelConnectionAwareChannelFactory(
+                    $this->connectionPool()
+                )
             )
         );
     }
@@ -152,24 +175,31 @@ abstract class AbstractIntegrationTestCase extends TestCase
         return new AMQPMessage($this->randomString());
     }
 
-
     protected function tearDown()
     {
-        $channel = $this->rabbitMqConnection()->channel();
-        foreach ($this->queues as $queue) {
-            $channel->queue_delete($queue->name());
-        }
+        foreach ($this->connectionPools as $connectionPool) {
+            $channel = $connectionPool->current()->channel();
+            foreach ($this->queues as $queue) {
+                try {
+                    $channel->queue_delete($queue->name());
+                } catch (\Exception $e) {}
+            }
 
-        foreach ($this->exchanges as $exchange) {
-            $channel->exchange_delete($exchange->name());
-        }
+            foreach ($this->exchanges as $exchange) {
+                try {
+                    $channel->exchange_delete($exchange->name());
+                } catch (\Exception $e) {}
+            }
 
-        foreach ($this->rabbitMqConnections as $connection) {
             try {
-                $connection->close();
-            } catch (\Exception $e) {}
+                while ($connection = $connectionPool->current()) {
+                    $connectionPool->disposeCurrent();
+                }
+            } catch (NoViableConnectionsInPoolException $e) {}
         }
 
-        $this->rabbitMqConnections = [];
+        $this->queues = [];
+        $this->exchanges = [];
+        $this->connectionPools = [];
     }
 }

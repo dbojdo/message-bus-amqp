@@ -2,7 +2,7 @@
 
 namespace Webit\MessageBus\Infrastructure\Amqp\Integration\Util\Queue;
 
-use Webit\MessageBus\Infrastructure\Amqp\Channel\NewChannelConnectionAwareChannelFactory;
+use Webit\MessageBus\Infrastructure\Amqp\Connection\Channel\NewChannelConnectionAwareChannelFactory;
 use Webit\MessageBus\Infrastructure\Amqp\Integration\AbstractIntegrationTestCase;
 use Webit\MessageBus\Infrastructure\Amqp\Util\Exchange\ExchangeType;
 use Webit\MessageBus\Infrastructure\Amqp\Util\Queue\Exception\CannotPurgeQueueException;
@@ -17,9 +17,10 @@ class QueueManagerTest extends AbstractIntegrationTestCase
     protected function setUp()
     {
         $this->queueManager = new QueueManager(
-            new NewChannelConnectionAwareChannelFactory($this->rabbitMqConnection())
+            new NewChannelConnectionAwareChannelFactory($this->connectionPool())
         );
     }
+
     /**
      * @test
      */
@@ -86,20 +87,22 @@ class QueueManagerTest extends AbstractIntegrationTestCase
         $exchangeManager->publishMessage(
             $publishedMessage = $this->randomAmqpMessage(),
             $exchange->name(),
-            $routingKey = 'test.type_1'
+            $routingKey = 'test.type'
         );
 
         $readMessage = $this->queueManager->readMessage($queue->name());
+
+        $this->assertNotNull($readMessage, 'No message could not be found in the Queue.');
         $this->assertEquals($publishedMessage->body, $readMessage->body);
 
         // message should not be delivered because of not matching routing key
         $exchangeManager->publishMessage(
             $publishedMessage = $this->randomAmqpMessage(),
             $exchange->name(),
-            $routingKey = 'no-test.type_1'
+            $routingKey = 'no-test.type'
         );
 
         $readMessage = $this->queueManager->readMessage($queue->name());
-        $this->assertNull($readMessage);
+        $this->assertNull($readMessage, 'No message should be found in the Queue.');
     }
 }

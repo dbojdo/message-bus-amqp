@@ -1,12 +1,11 @@
 <?php
 
-namespace Webit\MessageBus\Infrastructure\Amqp;
+namespace Webit\MessageBus\Infrastructure\Amqp\Publisher;
 
 use PhpAmqpLib\Message\AMQPMessage;
 use Prophecy\Prophecy\ObjectProphecy;
 use Webit\MessageBus\Exception\MessagePublicationException;
 use Webit\MessageBus\Infrastructure\Amqp\Publisher\Message\AmqpMessageFactory;
-use Webit\MessageBus\Infrastructure\Amqp\Publisher\PublicationTarget;
 
 class AmqpPublisherTest extends AbstractTestCase
 {

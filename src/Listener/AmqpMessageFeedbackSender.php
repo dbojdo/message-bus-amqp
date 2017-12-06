@@ -45,7 +45,7 @@ class AmqpMessageFeedbackSender
      */
     private function channelAndDeliveryTag(AMQPMessage $message)
     {
-        $channel = $message->delivery_info['channel'];
-        return [$channel, $message->delivery_info['delivery_tag']];
+        $channel = $message->get('channel');
+        return [$channel, $message->get('delivery_tag')];
     }
 }

@@ -2,14 +2,23 @@
 
 namespace Webit\MessageBus\Infrastructure\Amqp\Listener;
 
-use PhpAmqpLib\Message\AMQPMessage;
-use Webit\MessageBus\Infrastructure\Amqp\Consumer\Exception\AmqpMessageConsumptionException;
-
 interface AmqpListener
 {
+
     /**
-     * @param AMQPMessage $message
-     * @throws AmqpMessageConsumptionException
+     * @param bool $noLocal
+     * @param bool $noAck
+     * @param bool $exclusive
+     * @param bool $noWait
+     * @param int|null $ticket
+     * @param array $arguments
      */
-    public function onMessage(AMQPMessage $message);
+    public function listen(
+        $noLocal = false,
+        $noAck = false,
+        $exclusive = false,
+        $noWait = false,
+        int $ticket = null,
+        array $arguments = []
+    );
 }

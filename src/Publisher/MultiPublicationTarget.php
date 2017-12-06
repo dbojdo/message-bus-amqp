@@ -4,7 +4,7 @@ namespace Webit\MessageBus\Infrastructure\Amqp\Publisher;
 
 use PhpAmqpLib\Message\AMQPMessage;
 
-class MultiPublishTarget implements PublicationTarget
+final class MultiPublicationTarget implements PublicationTarget
 {
     /** @var PublicationTarget[] */
     private $targets;

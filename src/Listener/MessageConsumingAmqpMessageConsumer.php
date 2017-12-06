@@ -7,8 +7,9 @@ use Webit\MessageBus\Consumer;
 use Webit\MessageBus\Exception\MessageConsumptionException;
 use Webit\MessageBus\Infrastructure\Amqp\Listener\Exception\AmqpMessageConsumptionException;
 use Webit\MessageBus\Infrastructure\Amqp\Listener\Message\MessageFactory;
+use Webit\MessageBus\Infrastructure\Amqp\Listener\Message\SimpleMessageFactory;
 
-class MessageConsumingAmqpListener
+final class MessageConsumingAmqpMessageConsumer implements AmqpMessageConsumer
 {
     /** @var Consumer */
     private $consumer;
@@ -21,16 +22,16 @@ class MessageConsumingAmqpListener
      * @param Consumer $consumer
      * @param MessageFactory $messageFactory
      */
-    public function __construct(Consumer $consumer, MessageFactory $messageFactory)
+    public function __construct(Consumer $consumer, MessageFactory $messageFactory = null)
     {
         $this->consumer = $consumer;
-        $this->messageFactory = $messageFactory;
+        $this->messageFactory = $messageFactory ?: new SimpleMessageFactory();
     }
 
     /**
-     * @param AMQPMessage $message
+     * @inheritdoc
      */
-    public function onMessage(AMQPMessage $message)
+    public function consume(AMQPMessage $message)
     {
         $messageBusMessage = $this->messageFactory->create($message);
         try {

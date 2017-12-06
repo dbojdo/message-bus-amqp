@@ -4,7 +4,7 @@ namespace Webit\MessageBus\Infrastructure\Amqp\Util\Queue;
 
 use PhpAmqpLib\Exception\AMQPProtocolChannelException;
 use PhpAmqpLib\Message\AMQPMessage;
-use Webit\MessageBus\Infrastructure\Amqp\Channel\ConnectionAwareChannelFactory;
+use Webit\MessageBus\Infrastructure\Amqp\Connection\Channel\ConnectionAwareChannelFactory;
 use Webit\MessageBus\Infrastructure\Amqp\Util\Queue\Exception\CannotPurgeQueueException;
 
 class QueueManager

@@ -4,7 +4,7 @@ namespace Webit\MessageBus\Infrastructure\Amqp\Util\Exchange;
 
 use PhpAmqpLib\Exception\AMQPProtocolChannelException;
 use PhpAmqpLib\Message\AMQPMessage;
-use Webit\MessageBus\Infrastructure\Amqp\Channel\ConnectionAwareChannelFactory;
+use Webit\MessageBus\Infrastructure\Amqp\Connection\Channel\ConnectionAwareChannelFactory;
 use Webit\MessageBus\Infrastructure\Amqp\Util\Exchange\Exception\CannotBindExchangeException;
 
 class ExchangeManager

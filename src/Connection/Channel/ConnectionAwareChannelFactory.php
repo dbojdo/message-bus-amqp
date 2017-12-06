@@ -1,6 +1,6 @@
 <?php
 
-namespace Webit\MessageBus\Infrastructure\Amqp\Channel;
+namespace Webit\MessageBus\Infrastructure\Amqp\Connection\Channel;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Webit\MessageBus\Infrastructure\Amqp\Publisher\RoutingKey;
+namespace Webit\MessageBus\Infrastructure\Amqp\Publisher\Routing;
 
 use PhpAmqpLib\Message\AMQPMessage;
 
