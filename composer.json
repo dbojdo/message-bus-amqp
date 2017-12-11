@@ -23,7 +23,11 @@
         "webit/message-bus-infrastructure": "1.0.0"
     },
     "require-dev": {
+        "symfony/console": "^3.0|^4.0",
         "phpunit/phpunit": "^6.0"
+    },
+    "suggest": {
+        "symfony/console": "To use console commands for Utils and Listeners"
     },
     "autoload-dev": {
         "psr-4": {
@@ -39,3 +43,4 @@
     "prefer-stable": true,
     "minimum-stability": "dev"
 }
+

@@ -1,6 +1,6 @@
 <?php
 
-namespace Webit\MessageBus\Infrastructure\Amqp;
+namespace Webit\MessageBus\Infrastructure\Amqp\Registry;
 
 use Webit\MessageBus\Infrastructure\Amqp\Connection\Pool\ConnectionPool;
 use Webit\MessageBus\Infrastructure\Amqp\Connection\Pool\Registry\ConnectionPoolRegistry;
