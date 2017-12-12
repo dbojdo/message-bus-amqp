@@ -19,21 +19,19 @@ class ConnectionPoolBuilder
     private $connections = [];
 
     /**
-     * ConnectionPoolBuilder constructor.
-     * @param ConnectionFactory $connectionFactory
+     * @return ConnectionPoolBuilder
      */
-    public function __construct(ConnectionFactory $connectionFactory = null)
+    public static function create()
     {
-        $this->connectionFactory = $connectionFactory ?: new LazyConnectionFactory();
+        return new self();
     }
 
     /**
-     * @param ConnectionFactory|null $connectionFactory
-     * @return ConnectionPoolBuilder
+     * @param ConnectionFactory $factory
      */
-    public static function create(ConnectionFactory $connectionFactory = null)
+    public function setConnectionFactory(ConnectionFactory $factory)
     {
-        return new self($connectionFactory);
+        $this->connectionFactory = $factory;
     }
 
     /**
@@ -64,11 +62,24 @@ class ConnectionPoolBuilder
     public function build()
     {
         $connections = [];
+        $connectionFactory = $this->connectionFactory();
         foreach ($this->connections as $connectionName => $connectionParams) {
             $connection = $this->connectionFactory->create($connectionParams);
             $connections[$connectionName] = $connection;
         }
 
         return new BasicConnectionPool($connections, $this->logger ? new ConnectionPoolLogger($this->logger) : null);
+    }
+
+    /**
+     * @return ConnectionFactory|LazyConnectionFactory
+     */
+    private function connectionFactory()
+    {
+        if ($this->connectionFactory == null) {
+            $this->connectionFactory = new LazyConnectionFactory();
+        }
+
+        return $this->connectionFactory;
     }
 }

@@ -5,6 +5,7 @@ namespace Webit\MessageBus\Infrastructure\Amqp\Publisher;
 use PhpAmqpLib\Message\AMQPMessage;
 use Prophecy\Prophecy\ObjectProphecy;
 use Webit\MessageBus\Exception\MessagePublicationException;
+use Webit\MessageBus\Infrastructure\Amqp\AbstractTestCase;
 use Webit\MessageBus\Infrastructure\Amqp\Publisher\Message\AmqpMessageFactory;
 
 class AmqpPublisherTest extends AbstractTestCase
@@ -23,6 +24,7 @@ class AmqpPublisherTest extends AbstractTestCase
         $this->amqpMessageFactory = $this->prophesize(AmqpMessageFactory::class);
         $this->publicationTarget = $this->prophesize(PublicationTarget::class);
         $this->sut = new AmqpPublisher(
+            $this->publicationTarget->reveal(),
             $this->amqpMessageFactory->reveal(),
             $this->publicationTarget->reveal()
         );

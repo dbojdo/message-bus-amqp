@@ -4,6 +4,7 @@ namespace Webit\MessageBus\Infrastructure\Amqp\Publisher;
 
 use Webit\MessageBus\Exception\MessagePublicationException;
 use Webit\MessageBus\Infrastructure\Amqp\Publisher\Message\AmqpMessageFactory;
+use Webit\MessageBus\Infrastructure\Amqp\Publisher\Message\SimpleAmqpMessageFactory;
 use Webit\MessageBus\Message;
 use Webit\MessageBus\Publisher;
 
@@ -17,13 +18,13 @@ final class AmqpPublisher implements Publisher
 
     /**
      * AmqpPublisher constructor.
-     * @param AmqpMessageFactory $messageFactory
      * @param PublicationTarget $target
+     * @param AmqpMessageFactory $messageFactory
      */
-    public function __construct(AmqpMessageFactory $messageFactory, PublicationTarget $target)
+    public function __construct(PublicationTarget $target, AmqpMessageFactory $messageFactory = null)
     {
-        $this->messageFactory = $messageFactory;
         $this->target = $target;
+        $this->messageFactory = $messageFactory ?: new SimpleAmqpMessageFactory();
     }
 
     /**

@@ -12,6 +12,6 @@ final class SimpleMessageFactory implements MessageFactory
      */
     public function create(AMQPMessage $message): Message
     {
-        return new Message($message->get('type'), $message->getBody());
+        return new Message((string)$message->get('type'), (string)$message->getBody());
     }
 }

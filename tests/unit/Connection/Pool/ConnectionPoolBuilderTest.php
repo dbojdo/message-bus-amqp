@@ -27,7 +27,8 @@ class ConnectionPoolBuilderTest extends AbstractTestCase
 
         /** @var LoggerInterface|ObjectProphecy $logger */
         $logger = $this->prophesize(LoggerInterface::class);
-        $builder = ConnectionPoolBuilder::create($connectionFactory);
+        $builder = ConnectionPoolBuilder::create();
+        $builder->setConnectionFactory($connectionFactory);
         $builder->setLogger($logger->reveal());
 
         $builder->registerConnection($params1 = $this->randomConnectionParams());
