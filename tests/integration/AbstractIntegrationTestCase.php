@@ -28,6 +28,11 @@ abstract class AbstractIntegrationTestCase extends TestCase
     /** @var Queue[] */
     private $queues = [];
 
+    protected function setUp()
+    {
+        $this->waitForRabbitMq($this->connectionParams());
+    }
+
     /**
      * @param bool $newConnection
      * @return ConnectionPool
@@ -201,5 +206,30 @@ abstract class AbstractIntegrationTestCase extends TestCase
         $this->queues = [];
         $this->exchanges = [];
         $this->connectionPools = [];
+    }
+
+    /**
+     * @param ConnectionParams $connectionParams
+     * @param int $maxWait
+     */
+    private function waitForRabbitMq(ConnectionParams $connectionParams, $maxWait = 10)
+    {
+        $maxWait = $maxWait * 1000 * 1000;
+
+        $waited = 0;
+        while (!is_resource(@fsockopen($connectionParams->host(), $connectionParams->port()))) {
+            if ($waited > $maxWait) {
+                throw new \RuntimeException(
+                    sprintf(
+                        'RabbitMq (%s:%s) is not available after %.2f seconds.',
+                        $connectionParams->host(),
+                        $connectionParams->port(),
+                        $maxWait / 1000 / 1000
+                    )
+                );
+            }
+            usleep(200000);
+            $waited += 200000;
+        }
     }
 }

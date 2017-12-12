@@ -16,6 +16,7 @@ class QueueManagerTest extends AbstractIntegrationTestCase
 
     protected function setUp()
     {
+        parent::setUp();
         $this->queueManager = new QueueManager(
             new NewChannelConnectionAwareChannelFactory($this->connectionPool())
         );

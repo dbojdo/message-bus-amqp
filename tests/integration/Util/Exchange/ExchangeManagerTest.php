@@ -16,6 +16,8 @@ class ExchangeManagerTest extends AbstractIntegrationTestCase
 
     protected function setUp()
     {
+        parent::setUp();
+
         $this->exchangeManager = new ExchangeManager(
             new NewChannelConnectionAwareChannelFactory(
                 $this->connectionPool()

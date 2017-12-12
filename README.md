@@ -147,11 +147,11 @@ To listen for messages from AMQP and consume them:
 Unit tests
 
 ```bash
-docker-compose run --rm php ./vendor/bin/phpunit
+docker-compose run --rm unit-tests
 ```
 
 Integration tests
 
 ```bash
-docker-compose run --rm php ./vendor/bin/phpunit -c tests/integration/phpunit.xml.dist
+docker-compose run --rm integration-tests
 ```

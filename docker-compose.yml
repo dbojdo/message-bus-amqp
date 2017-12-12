@@ -1,14 +1,25 @@
 version: '2'
 services:
-    php:
+    src:
         build : ./docker/php
         volumes:
             - .:/var/www/html
             - ./docker/php/config:/usr/local/etc/php/conf.d
             - ~/.composer:/root/.composer
+        working_dir: /var/www/html
+
+    unit-tests:
+        extends:
+          service: src
+        command: ./vendor/bin/phpunit
+
+    integration-tests:
+        extends:
+          service: src
         links:
             - rabbitmq
-        working_dir: /var/www/html
+        command: ./vendor/bin/phpunit -c tests/integration/phpunit.xml.dist
+
     rabbitmq:
         image: rabbitmq:management
         ports:
