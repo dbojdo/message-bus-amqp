@@ -144,6 +144,12 @@ To listen for messages from AMQP and consume them:
 
 ## Running tests
 
+Install dependencies with composer
+
+```bash
+docker-compose run --rm composer
+```
+
 Unit tests
 
 ```bash

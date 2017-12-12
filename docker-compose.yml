@@ -20,6 +20,11 @@ services:
             - rabbitmq
         command: ./vendor/bin/phpunit -c tests/integration/phpunit.xml.dist
 
+    composer:
+        extends:
+            service: src
+        command: composer install -o -n
+
     rabbitmq:
         image: rabbitmq:management
         ports:
