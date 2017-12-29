@@ -7,6 +7,7 @@ use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Log\LoggerInterface;
 use Webit\MessageBus\Infrastructure\Amqp\AbstractTestCase;
 use Webit\MessageBus\Infrastructure\Amqp\Listener\Exception\AmqpMessageConsumptionException;
+use Webit\MessageBus\Infrastructure\Amqp\Listener\Exception\CouldNotConsumeAmqpMessageException;
 
 class ConsumerLoggerTest extends AbstractTestCase
 {
@@ -75,7 +76,7 @@ class ConsumerLoggerTest extends AbstractTestCase
         $message->getBody()->willReturn($messageContent = $this->randomString());
 
         /** @var AmqpMessageConsumptionException|ObjectProphecy $exception */
-        $exception = AmqpMessageConsumptionException::forMessage($message->reveal());
+        $exception = CouldNotConsumeAmqpMessageException::forMessage($message->reveal());
 
         $this->loger->alert(
             Argument::containingString('Error during message consumption'),

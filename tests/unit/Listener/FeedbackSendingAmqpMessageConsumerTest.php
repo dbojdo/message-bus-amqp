@@ -4,7 +4,7 @@ namespace Webit\MessageBus\Infrastructure\Amqp\Listener;
 
 use Prophecy\Prophecy\ObjectProphecy;
 use Webit\MessageBus\Infrastructure\Amqp\AbstractTestCase;
-use Webit\MessageBus\Infrastructure\Amqp\Listener\Exception\AmqpMessageConsumptionException;
+use Webit\MessageBus\Infrastructure\Amqp\Listener\Exception\CouldNotConsumeAmqpMessageException;
 
 class FeedbackSendingAmqpMessageConsumerTest extends AbstractTestCase
 {
@@ -47,12 +47,14 @@ class FeedbackSendingAmqpMessageConsumerTest extends AbstractTestCase
      */
     public function itNAcknowledgesMessageOnException()
     {
+
         $amqpMessage = $this->randomAmqpMessage()->reveal();
         $this->innerListener->consume($amqpMessage)
-            ->willThrow($this->prophesize(AmqpMessageConsumptionException::class)->reveal());
+            ->willThrow(CouldNotConsumeAmqpMessageException::class);
         $this->feedbackSender->nacknowledge($amqpMessage)->shouldBeCalled();
         $this->feedbackSender->acknowledge($amqpMessage)->shouldNotBeCalled();
 
         $this->listener->consume($amqpMessage);
     }
 }
+

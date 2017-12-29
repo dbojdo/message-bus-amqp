@@ -7,6 +7,7 @@ use Webit\MessageBus\Consumer;
 use Webit\MessageBus\Exception\MessageConsumptionException;
 use Webit\MessageBus\Infrastructure\Amqp\AbstractTestCase;
 use Webit\MessageBus\Infrastructure\Amqp\Listener\Exception\AmqpMessageConsumptionException;
+use Webit\MessageBus\Infrastructure\Amqp\Listener\Exception\CouldNotConsumeAmqpMessageException;
 use Webit\MessageBus\Infrastructure\Amqp\Listener\Message\MessageFactory;
 
 class MessageConsumingAmqpMessageConsumerTest extends AbstractTestCase
@@ -50,13 +51,13 @@ class MessageConsumingAmqpMessageConsumerTest extends AbstractTestCase
         $amqpMessage = $this->randomAmqpMessage()->reveal();
         $this->messageFactory->create($amqpMessage)->willReturn($message = $this->randomMessage());
         $this->consumer->consume($message)
-            ->willThrow($exception = $this->prophesize(MessageConsumptionException::class)->reveal());
+            ->willThrow($exception = MessageConsumptionException::forMessage($message));
 
 
         try {
             $this->listener->consume($amqpMessage);
         } catch (AmqpMessageConsumptionException $e) {
-            $this->assertEquals(AmqpMessageConsumptionException::forMessage($amqpMessage, 0, $exception), $e);
+            $this->assertEquals(CouldNotConsumeAmqpMessageException::forMessage($amqpMessage, null, 0, $exception), $e);
         }
     }
 }

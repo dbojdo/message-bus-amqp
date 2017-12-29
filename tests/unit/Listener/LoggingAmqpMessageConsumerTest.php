@@ -5,7 +5,7 @@ namespace Webit\MessageBus\Infrastructure\Amqp\Listener;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Webit\MessageBus\Infrastructure\Amqp\AbstractTestCase;
-use Webit\MessageBus\Infrastructure\Amqp\Listener\Exception\AmqpMessageConsumptionException;
+use Webit\MessageBus\Infrastructure\Amqp\Listener\Exception\CouldNotConsumeAmqpMessageException;
 
 class LoggingAmqpMessageConsumerTest extends AbstractTestCase
 {
@@ -53,7 +53,7 @@ class LoggingAmqpMessageConsumerTest extends AbstractTestCase
     {
         $message = $this->randomAmqpMessage()->reveal();
 
-        $exception = $this->prophesize(AmqpMessageConsumptionException::class)->reveal();
+        $exception = $this->prophesize(CouldNotConsumeAmqpMessageException::class)->reveal();
         $this->innerConsumer->consume($message)->willThrow($exception);
 
         $this->logger->logPreConsume($message)->shouldBeCalled();
@@ -63,3 +63,4 @@ class LoggingAmqpMessageConsumerTest extends AbstractTestCase
         $this->consumer->consume($message);
     }
 }
+
