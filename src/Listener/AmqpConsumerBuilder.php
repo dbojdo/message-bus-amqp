@@ -22,6 +22,9 @@ class AmqpConsumerBuilder
     /** @var ConsumerLogger */
     private $logger;
 
+    /** @var bool */
+    private $supportKillPill = true;
+
     /**
      * @return AmqpConsumerBuilder
      */
@@ -38,28 +41,24 @@ class AmqpConsumerBuilder
         $this->shouldSendFeedback = $shouldSendFeedback;
     }
 
-    /**
-     * @param MessageFactory $factory
-     */
     public function setMessageFactory(MessageFactory $factory)
     {
         $this->messageFactory = $factory;
     }
 
-    /**
-     * @param LoggerInterface $logger
-     */
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = new ConsumerLogger($logger);
     }
 
-    /**
-     * @param Consumer $consumer
-     */
     public function setConsumer(Consumer $consumer)
     {
         $this->consumer = $consumer;
+    }
+
+    public function supportKillPill(bool $supportKillPill)
+    {
+        $this->supportKillPill = $supportKillPill;
     }
 
     /**
@@ -72,6 +71,10 @@ class AmqpConsumerBuilder
             $amqpConsumer = new FeedbackSendingAmqpMessageConsumer(
                 $amqpConsumer
             );
+        }
+
+        if ($this->supportKillPill) {
+            $amqpConsumer = new KillPillAmqpMessageConsumer($amqpConsumer);
         }
 
         if ($this->logger) {
