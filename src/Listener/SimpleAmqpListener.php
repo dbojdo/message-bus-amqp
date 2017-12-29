@@ -34,6 +34,7 @@ final class SimpleAmqpListener implements AmqpListener
      * @inheritdoc
      */
     public function listen(
+        int $timeout = 0,
         $noLocal = false,
         $noAck = false,
         $exclusive = false,
@@ -59,7 +60,7 @@ final class SimpleAmqpListener implements AmqpListener
         );
 
         while($channel->callbacks) {
-            $channel->wait();
+            $channel->wait(null, null, $timeout);
         }
     }
 }

@@ -6,6 +6,7 @@ interface AmqpListener
 {
 
     /**
+     * @param int $timeout
      * @param bool $noLocal
      * @param bool $noAck
      * @param bool $exclusive
@@ -14,6 +15,7 @@ interface AmqpListener
      * @param array $arguments
      */
     public function listen(
+        int $timeout = 0,
         $noLocal = false,
         $noAck = false,
         $exclusive = false,
