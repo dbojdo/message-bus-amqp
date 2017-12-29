@@ -15,26 +15,19 @@ final class SimpleAmqpListener implements AmqpListener
     /** @var string */
     private $queueName;
 
-    /** @var string */
-    private $consumerTag;
+    /** @var int */
+    private $prefetchCount;
 
-    /**
-     * AbstractBasicPublicationTarget constructor.
-     * @param ConnectionAwareChannelFactory $channelFactory
-     * @param AmqpMessageConsumer $consumer
-     * @param string $queueName
-     * @param string $consumerTag
-     */
     public function __construct(
         ConnectionAwareChannelFactory $channelFactory,
         AmqpMessageConsumer $consumer,
         string $queueName,
-        string $consumerTag = ''
+        int $prefetchCount = null
     ) {
         $this->channelFactory = $channelFactory;
         $this->consumer = $consumer;
         $this->queueName = $queueName;
-        $this->consumerTag = $consumerTag;
+        $this->prefetchCount = $prefetchCount;
     }
 
     /**
@@ -49,9 +42,13 @@ final class SimpleAmqpListener implements AmqpListener
         array $arguments = []
     ) {
         $channel = $this->channelFactory->create();
+        if ($this->prefetchCount) {
+            $channel->basic_qos(null, $this->prefetchCount, null);
+        }
+
         $channel->basic_consume(
             $this->queueName,
-            $this->consumerTag,
+            '',
             $noLocal,
             $noAck,
             $exclusive,
@@ -60,5 +57,9 @@ final class SimpleAmqpListener implements AmqpListener
             $ticket,
             $arguments
         );
+
+        while($channel->callbacks) {
+            $channel->wait();
+        }
     }
 }
