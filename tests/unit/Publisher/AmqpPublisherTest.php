@@ -4,9 +4,9 @@ namespace Webit\MessageBus\Infrastructure\Amqp\Publisher;
 
 use PhpAmqpLib\Message\AMQPMessage;
 use Prophecy\Prophecy\ObjectProphecy;
-use Webit\MessageBus\Exception\MessagePublicationException;
 use Webit\MessageBus\Infrastructure\Amqp\AbstractTestCase;
 use Webit\MessageBus\Infrastructure\Amqp\Publisher\Message\AmqpMessageFactory;
+use Webit\MessageBus\Publisher\Exception\CannotPublishMessageException;
 
 class AmqpPublisherTest extends AbstractTestCase
 {
@@ -55,7 +55,7 @@ class AmqpPublisherTest extends AbstractTestCase
         $this->amqpMessageFactory->create($message)->willReturn($amqpMessage->reveal())->shouldBeCalled();
         $this->publicationTarget->publish($amqpMessage->reveal())->willThrow($this->prophesize(\Exception::class)->reveal());
 
-        $this->expectException(MessagePublicationException::class);
+        $this->expectException(CannotPublishMessageException::class);
 
         $this->sut->publish($message);
     }

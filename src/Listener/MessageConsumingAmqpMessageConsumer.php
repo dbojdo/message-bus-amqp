@@ -4,8 +4,6 @@ namespace Webit\MessageBus\Infrastructure\Amqp\Listener;
 
 use PhpAmqpLib\Message\AMQPMessage;
 use Webit\MessageBus\Consumer;
-use Webit\MessageBus\Exception\MessageConsumptionException;
-use Webit\MessageBus\Infrastructure\Amqp\Listener\Exception\AmqpMessageConsumptionException;
 use Webit\MessageBus\Infrastructure\Amqp\Listener\Exception\CouldNotConsumeAmqpMessageException;
 use Webit\MessageBus\Infrastructure\Amqp\Listener\Message\MessageFactory;
 use Webit\MessageBus\Infrastructure\Amqp\Listener\Message\SimpleMessageFactory;
@@ -37,7 +35,7 @@ final class MessageConsumingAmqpMessageConsumer implements AmqpMessageConsumer
         $messageBusMessage = $this->messageFactory->create($message);
         try {
             $this->consumer->consume($messageBusMessage);
-        } catch (MessageConsumptionException $exception) {
+        } catch (Consumer\Exception\MessageConsumptionException $exception) {
             throw CouldNotConsumeAmqpMessageException::forMessage($message, null,0, $exception);
         }
     }

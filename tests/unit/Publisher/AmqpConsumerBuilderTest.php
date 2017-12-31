@@ -6,7 +6,7 @@ use Psr\Log\LoggerInterface;
 use Webit\MessageBus\Consumer;
 use Webit\MessageBus\Infrastructure\Amqp\AbstractTestCase;
 use Webit\MessageBus\Infrastructure\Amqp\Listener\AmqpConsumerBuilder;
-use Webit\MessageBus\Infrastructure\Amqp\Listener\FeedbackSendingAmqpMessageConsumer;
+use Webit\MessageBus\Infrastructure\Amqp\Listener\KillPillAmqpMessageConsumer;
 use Webit\MessageBus\Infrastructure\Amqp\Listener\LoggingAmqpMessageConsumer;
 use Webit\MessageBus\Infrastructure\Amqp\Listener\Message\MessageFactory;
 use Webit\MessageBus\Infrastructure\Amqp\Listener\MessageConsumingAmqpMessageConsumer;
@@ -16,10 +16,10 @@ class AmqpConsumerBuilderTest extends AbstractTestCase
     /**
      * @test
      */
-    public function itBuildsAmqpConsumerFeedbackSendingByDefault()
+    public function itBuildsSupportsKillPillByDefault()
     {
         $builder = AmqpConsumerBuilder::create();
-        $this->assertInstanceOf(FeedbackSendingAmqpMessageConsumer::class, $builder->build());
+        $this->assertInstanceOf(KillPillAmqpMessageConsumer::class, $builder->build());
     }
 
     /**
@@ -29,6 +29,7 @@ class AmqpConsumerBuilderTest extends AbstractTestCase
     {
         $builder = AmqpConsumerBuilder::create();
         $builder->shouldSendFeedback(false);
+        $builder->supportKillPill(false);
         $this->assertInstanceOf(MessageConsumingAmqpMessageConsumer::class, $builder->build());
     }
 

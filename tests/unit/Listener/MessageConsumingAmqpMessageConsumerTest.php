@@ -4,7 +4,6 @@ namespace Webit\MessageBus\Infrastructure\Amqp\Listener;
 
 use Prophecy\Prophecy\ObjectProphecy;
 use Webit\MessageBus\Consumer;
-use Webit\MessageBus\Exception\MessageConsumptionException;
 use Webit\MessageBus\Infrastructure\Amqp\AbstractTestCase;
 use Webit\MessageBus\Infrastructure\Amqp\Listener\Exception\AmqpMessageConsumptionException;
 use Webit\MessageBus\Infrastructure\Amqp\Listener\Exception\CouldNotConsumeAmqpMessageException;
@@ -51,7 +50,7 @@ class MessageConsumingAmqpMessageConsumerTest extends AbstractTestCase
         $amqpMessage = $this->randomAmqpMessage()->reveal();
         $this->messageFactory->create($amqpMessage)->willReturn($message = $this->randomMessage());
         $this->consumer->consume($message)
-            ->willThrow($exception = MessageConsumptionException::forMessage($message));
+            ->willThrow($exception = Consumer\Exception\CannotConsumeMessageException::forMessage($message));
 
 
         try {
