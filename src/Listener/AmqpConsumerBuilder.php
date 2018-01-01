@@ -6,7 +6,7 @@ use Psr\Log\LoggerInterface;
 use Webit\MessageBus\Consumer;
 use Webit\MessageBus\Infrastructure\Amqp\Listener\Message\MessageFactory;
 use Webit\MessageBus\Infrastructure\Amqp\Listener\Message\SimpleMessageFactory;
-use Webit\MessageBus\VoidConsumer;
+use Webit\MessageBus\Consumer\VoidConsumer;
 
 class AmqpConsumerBuilder
 {
